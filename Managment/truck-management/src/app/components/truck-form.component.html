@@ -1,0 +1,187 @@
+<div class="form-container">
+  <h2>Add Truck Trip Data</h2>
+  
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+
+  <form [formGroup]="truckForm" (ngSubmit)="onSubmit()" class="truck-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="truckNumber">Truck Number *</label>
+                            <input 
+                                type="text" 
+                                id="truckNumber" 
+                                formControlName="truckNumber"
+                                placeholder="e.g., TR-001"
+                                [class.error]="isSubmitted && f.truckNumber.invalid"
+                            >
+                            <div *ngIf="isSubmitted && f.truckNumber.invalid" class="error-message">
+                                <div *ngIf="f.truckNumber.errors?.['required']">Truck number is required</div>
+                                <div *ngIf="f.truckNumber.errors?.['minlength']">Truck number must be at least 2 characters</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="driverName">Driver Name *</label>
+                            <input 
+                                type="text" 
+                                id="driverName" 
+                                formControlName="driverName"
+                                placeholder="Driver's full name"
+                                [class.error]="isSubmitted && f.driverName.invalid"
+                            >
+                            <div *ngIf="isSubmitted && f.driverName.invalid" class="error-message">
+                                <div *ngIf="f.driverName.errors?.['required']">Driver name is required</div>
+                                <div *ngIf="f.driverName.errors?.['minlength']">Driver name must be at least 2 characters</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="branch">Branch *</label>
+                            <input 
+                                type="text" 
+                                id="branch" 
+                                formControlName="branch"
+                                placeholder="e.g., Mumbai Branch"
+                                [class.error]="isSubmitted && f.branch.invalid"
+                            >
+                            <div *ngIf="isSubmitted && f.branch.invalid" class="error-message">
+                                <div *ngIf="f.branch.errors?.['required']">Branch is required</div>
+                                <div *ngIf="f.branch.errors?.['minlength']">Branch must be at least 2 characters</div>
+                            </div>
+                        </div>
+                    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="date">Trip Date *</label>
+        <input 
+          type="date" 
+          id="date" 
+          formControlName="date"
+          [class.error]="isSubmitted && f.date.invalid"
+        >
+        <div *ngIf="isSubmitted && f.date.invalid" class="error-message">
+          <div *ngIf="f.date.errors?.['required']">Trip date is required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Trip Location *</label>
+        <input 
+          type="text" 
+          id="location" 
+          formControlName="location"
+          placeholder="e.g., Mumbai to Delhi"
+          [class.error]="isSubmitted && f.location.invalid"
+        >
+        <div *ngIf="isSubmitted && f.location.invalid" class="error-message">
+          <div *ngIf="f.location.errors?.['required']">Trip location is required</div>
+          <div *ngIf="f.location.errors?.['minlength']">Location must be at least 2 characters</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="kilometers">Kilometers Driven *</label>
+        <input 
+          type="number" 
+          id="kilometers" 
+          formControlName="kilometers"
+          placeholder="0"
+          min="1"
+          [class.error]="isSubmitted && f.kilometers.invalid"
+        >
+        <div *ngIf="isSubmitted && f.kilometers.invalid" class="error-message">
+          <div *ngIf="f.kilometers.errors?.['required']">Kilometers is required</div>
+          <div *ngIf="f.kilometers.errors?.['min']">Kilometers must be at least 1</div>
+        </div>
+      </div>
+    </div>
+
+                    <div class="costs-section">
+                        <h3>Costs</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fuelCost">Fuel Cost (₹) *</label>
+                                <input 
+                                    type="number" 
+                                    id="fuelCost" 
+                                    formControlName="fuelCost"
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.01"
+                                    [class.error]="isSubmitted && f.fuelCost.invalid"
+                                >
+                                <div *ngIf="isSubmitted && f.fuelCost.invalid" class="error-message">
+                                    <div *ngIf="f.fuelCost.errors?.['required']">Fuel cost is required</div>
+                                    <div *ngIf="f.fuelCost.errors?.['min']">Fuel cost cannot be negative</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="otherExpenses">Other Expenses (₹) *</label>
+                                <input 
+                                    type="number" 
+                                    id="otherExpenses" 
+                                    formControlName="otherExpenses"
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.01"
+                                    [class.error]="isSubmitted && f.otherExpenses.invalid"
+                                >
+                                <div *ngIf="isSubmitted && f.otherExpenses.invalid" class="error-message">
+                                    <div *ngIf="f.otherExpenses.errors?.['required']">Other expenses is required</div>
+                                    <div *ngIf="f.otherExpenses.errors?.['min']">Other expenses cannot be negative</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+    <div class="revenue-section">
+      <h3>Revenue</h3>
+      <div class="form-group">
+        <label for="totalRevenue">Total Revenue (₹) *</label>
+        <input 
+          type="number" 
+          id="totalRevenue" 
+          formControlName="totalRevenue"
+          placeholder="0"
+          min="0"
+          step="0.01"
+          [class.error]="isSubmitted && f.totalRevenue.invalid"
+        >
+        <div *ngIf="isSubmitted && f.totalRevenue.invalid" class="error-message">
+          <div *ngIf="f.totalRevenue.errors?.['required']">Total revenue is required</div>
+          <div *ngIf="f.totalRevenue.errors?.['min']">Total revenue cannot be negative</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calculation-summary">
+      <h3>Calculation Summary</h3>
+      <div class="summary-row">
+        <span>Total Cost:</span>
+        <span class="cost">₹{{ calculateTotalCost() | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-row">
+        <span>Total Revenue:</span>
+        <span class="revenue">₹{{ (truckForm.get('totalRevenue')?.value || 0) | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-row profit-row">
+        <span>Profit/Loss:</span>
+        <span [class]="calculateProfit() >= 0 ? 'profit' : 'loss'">
+          ₹{{ calculateProfit() | number:'1.2-2' }}
+        </span>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="truckForm.invalid">
+      Add Truck Data
+    </button>
+  </form>
+</div>

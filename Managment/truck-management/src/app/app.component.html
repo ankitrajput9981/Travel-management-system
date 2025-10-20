@@ -1,0 +1,48 @@
+<div class="app-container">
+  <header class="app-header">
+    <h1>{{ title }}</h1>
+    <p>Track your truck trips, costs, and profits efficiently</p>
+  </header>
+
+        <nav class="tab-navigation">
+            <button 
+                class="tab-btn" 
+                [class.active]="activeTab === 'dashboard'"
+                (click)="setActiveTab('dashboard')"
+            >
+                📊 Dashboard
+            </button>
+            <button 
+                class="tab-btn" 
+                [class.active]="activeTab === 'add'"
+                (click)="setActiveTab('add')"
+            >
+                📝 Add Trip Data
+            </button>
+            <button 
+                class="tab-btn" 
+                [class.active]="activeTab === 'monthly'"
+                (click)="setActiveTab('monthly')"
+            >
+                📅 Monthly Expenses
+            </button>
+            <button 
+                class="tab-btn" 
+                [class.active]="activeTab === 'view'"
+                (click)="setActiveTab('view')"
+            >
+                🔍 View & Search Data
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <app-dashboard *ngIf="activeTab === 'dashboard'"></app-dashboard>
+            <app-truck-form *ngIf="activeTab === 'add'"></app-truck-form>
+            <app-monthly-expenses *ngIf="activeTab === 'monthly'"></app-monthly-expenses>
+            <app-truck-list *ngIf="activeTab === 'view'"></app-truck-list>
+        </main>
+
+  <footer class="app-footer">
+    <p>&copy; 2024 Truck Management System. All data is stored locally in your browser.</p>
+  </footer>
+</div>

@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truck Management System</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .app-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .app-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .truck-form {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .costs-section,
+        .revenue-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .costs-section h3,
+        .revenue-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .calculation-summary {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .calculation-summary h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 1.1rem;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .profit-row {
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .cost {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .revenue {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .profit {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .loss {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            padding: 40px;
+        }
+
+        .dashboard-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .overall-stats-section {
+            margin-bottom: 40px;
+        }
+
+        .overall-stats-section h3 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.profit-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .truck-performance-section {
+            margin-bottom: 40px;
+        }
+
+        .truck-performance-section h3 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .trucks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .truck-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .truck-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .truck-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .truck-header h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .truck-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .truck-status.profitable {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .truck-status.loss {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .truck-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .metric.net-profit {
+            grid-column: 1 / -1;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 15px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* Monthly Expenses Styles */
+        .monthly-expenses-container {
+            padding: 40px;
+        }
+
+        .monthly-expenses-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .monthly-expense-form {
+            max-width: 1000px;
+            margin: 0 auto 40px;
+        }
+
+        .expenses-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .expenses-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .total-display {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #dc3545;
+            text-align: center;
+        }
+
+        .expenses-list {
+            margin-top: 40px;
+        }
+
+        .expenses-list h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .expenses-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .expenses-table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .expenses-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .expenses-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* List Container Styles */
+        .list-container {
+            padding: 40px;
+        }
+
+        .list-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .filters-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .truck-select,
+        .search-input {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .truck-select:focus,
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            display: none;
+        }
+
+        .summary-card h3 {
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-item .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .summary-item .value {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .trucks-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .trucks-table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .trucks-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .trucks-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .truck-number {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .no-data-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .no-data-content p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .overall-stats {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .overall-stats h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .app-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+            
+            .form-container,
+            .list-container,
+            .dashboard-container,
+            .monthly-expenses-container {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .trucks-table,
+            .expenses-table {
+                font-size: 0.8rem;
+            }
+            
+            .trucks-table th,
+            .trucks-table td,
+            .expenses-table th,
+            .expenses-table td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Truck Management System</h1>
+            <p>Track your truck trips, costs, and profits efficiently</p>
+        </header>
+
+        <nav class="tab-navigation">
+            <button class="tab-btn active" onclick="showTab('dashboard')">
+                📊 Dashboard
+            </button>
+            <button class="tab-btn" onclick="showTab('add')">
+                📝 Add Trip Data
+            </button>
+            <button class="tab-btn" onclick="showTab('monthly')">
+                📅 Monthly Expenses
+            </button>
+            <button class="tab-btn" onclick="showTab('view')">
+                🔍 View & Search Data
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="dashboard-container">
+                <h2>Truck Fleet Dashboard</h2>
+                
+                <!-- Overall Statistics -->
+                <div class="overall-stats-section">
+                    <h3>Fleet Overview</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🚛</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="total-trucks">0</div>
+                                <div class="stat-label">Total Trucks</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="total-trips">0</div>
+                                <div class="stat-label">Total Trips</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">🛣️</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="total-km">0</div>
+                                <div class="stat-label">Total KM</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-content">
+                                <div class="stat-value revenue" id="total-revenue">₹0.00</div>
+                                <div class="stat-label">Total Revenue</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">💸</div>
+                            <div class="stat-content">
+                                <div class="stat-value cost" id="total-cost">₹0.00</div>
+                                <div class="stat-label">Trip Costs</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-content">
+                                <div class="stat-value cost" id="total-monthly-expenses">₹0.00</div>
+                                <div class="stat-label">Monthly Expenses</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card profit-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="net-profit">₹0.00</div>
+                                <div class="stat-label">Net Profit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Truck Performance -->
+                <div class="truck-performance-section" id="truck-performance" style="display: none;">
+                    <h3>Individual Truck Performance</h3>
+                    <div class="trucks-grid" id="trucks-grid">
+                    </div>
+                </div>
+
+                <!-- Recent Trips -->
+                <div class="recent-trips-section" id="recent-trips" style="display: none;">
+                    <h3>Recent Trips</h3>
+                    <div class="table-container">
+                        <table class="trucks-table">
+                            <thead>
+                                <tr>
+                                    <th>Truck #</th>
+                                    <th>Driver</th>
+                                    <th>Date</th>
+                                    <th>Location</th>
+                                    <th>KM</th>
+                                    <th>Revenue</th>
+                                    <th>Cost</th>
+                                    <th>Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-trips-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="no-data-dashboard" class="no-data">
+                    <div class="no-data-content">
+                        <h3>🚛 No Truck Data Yet</h3>
+                        <p>Start by adding some truck trips to see your dashboard!</p>
+                        <p>Go to the "Add Trip Data" tab to get started.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Trip Data Tab -->
+            <div id="add-tab" class="form-container" style="display: none;">
+                <h2>Add Truck Trip Data</h2>
+                
+                <div id="success-message" class="success-message">
+                    Truck data added successfully!
+                </div>
+
+                <form id="truck-form" class="truck-form" onsubmit="addTruckData(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="truckNumber">Truck Number *</label>
+                            <input type="text" id="truckNumber" name="truckNumber" placeholder="e.g., TR-001" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="driverName">Driver Name *</label>
+                            <input type="text" id="driverName" name="driverName" placeholder="Driver's full name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Trip Date *</label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Trip Location *</label>
+                            <input type="text" id="location" name="location" placeholder="e.g., Mumbai to Delhi" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="kilometers">Kilometers Driven *</label>
+                            <input type="number" id="kilometers" name="kilometers" placeholder="0" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="costs-section">
+                        <h3>Costs</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fuelCost">Fuel Cost (₹) *</label>
+                                <input type="number" id="fuelCost" name="fuelCost" placeholder="0" min="0" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="driverSalary">Driver Salary (₹) *</label>
+                                <input type="number" id="driverSalary" name="driverSalary" placeholder="0" min="0" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="maintenanceCost">Maintenance Cost (₹) *</label>
+                                <input type="number" id="maintenanceCost" name="maintenanceCost" placeholder="0" min="0" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="otherExpenses">Other Expenses (₹) *</label>
+                                <input type="number" id="otherExpenses" name="otherExpenses" placeholder="0" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="revenue-section">
+                        <h3>Revenue</h3>
+                        <div class="form-group">
+                            <label for="totalRevenue">Total Revenue (₹) *</label>
+                            <input type="number" id="totalRevenue" name="totalRevenue" placeholder="0" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="calculation-summary">
+                        <h3>Calculation Summary</h3>
+                        <div class="summary-row">
+                            <span>Total Cost:</span>
+                            <span class="cost" id="total-cost-calc">₹0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total Revenue:</span>
+                            <span class="revenue" id="total-revenue-display">₹0.00</span>
+                        </div>
+                        <div class="summary-row profit-row">
+                            <span>Profit/Loss:</span>
+                            <span id="profit-loss">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Add Truck Data
+                    </button>
+                </form>
+            </div>
+
+            <!-- Monthly Expenses Tab -->
+            <div id="monthly-tab" class="monthly-expenses-container" style="display: none;">
+                <h2>Monthly Expenses Management</h2>
+                
+                <div id="monthly-success-message" class="success-message">
+                    Monthly expense added successfully!
+                </div>
+
+                <form id="monthly-expense-form" class="monthly-expense-form" onsubmit="addMonthlyExpense(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="monthlyTruckNumber">Truck Number *</label>
+                            <select id="monthlyTruckNumber" name="monthlyTruckNumber" required>
+                                <option value="">Select Truck</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="month">Month *</label>
+                            <select id="month" name="month" required>
+                                <option value="">Select Month</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="year">Year *</label>
+                            <input type="number" id="year" name="year" placeholder="2024" min="2020" max="2030" required>
+                        </div>
+                    </div>
+
+                    <div class="expenses-section">
+                        <h3>Monthly Expenses</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="monthlyDriverSalary">Driver Salary (₹) *</label>
+                                <input type="number" id="monthlyDriverSalary" name="monthlyDriverSalary" placeholder="0" min="0" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="monthlyMaintenanceCost">Maintenance Cost (₹) *</label>
+                                <input type="number" id="monthlyMaintenanceCost" name="monthlyMaintenanceCost" placeholder="0" min="0" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="otherMonthlyExpenses">Other Monthly Expenses (₹) *</label>
+                                <input type="number" id="otherMonthlyExpenses" name="otherMonthlyExpenses" placeholder="0" min="0" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Total Monthly Expense</label>
+                                <div class="total-display" id="total-monthly-expense-calc">₹0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Add Monthly Expense
+                    </button>
+                </form>
+
+                <!-- Monthly Expenses List -->
+                <div class="expenses-list" id="expenses-list" style="display: none;">
+                    <h3>Monthly Expenses History</h3>
+                    <div class="table-container">
+                        <table class="expenses-table">
+                            <thead>
+                                <tr>
+                                    <th>Truck #</th>
+                                    <th>Month/Year</th>
+                                    <th>Driver Salary</th>
+                                    <th>Maintenance</th>
+                                    <th>Other Expenses</th>
+                                    <th>Total Expense</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-expenses-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="no-monthly-data" class="no-data">
+                    <p>No monthly expenses recorded yet. Add some monthly expenses to get started!</p>
+                </div>
+            </div>
+
+            <!-- View Data Tab -->
+            <div id="view-tab" class="list-container" style="display: none;">
+                <h2>Truck Data Management</h2>
+                
+                <div class="filters-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="truckSelect">Select Truck:</label>
+                            <select id="truckSelect" onchange="filterByTruck()">
+                                <option value="">All Trucks</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="searchInput">Search:</label>
+                            <input type="text" id="searchInput" placeholder="Search by truck number, driver name, or date" oninput="searchTrucks()">
+                        </div>
+
+                        <button onclick="clearFilters()" class="clear-btn">Clear Filters</button>
+                    </div>
+                </div>
+
+                <!-- Truck Summary -->
+                <div id="summary-card" class="summary-card">
+                    <h3 id="summary-title">Truck Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="label">Total Trips:</span>
+                            <span class="value" id="summary-trips">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Kilometers:</span>
+                            <span class="value" id="summary-km">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Revenue:</span>
+                            <span class="value revenue" id="summary-revenue">₹0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Cost:</span>
+                            <span class="value cost" id="summary-cost">₹0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Profit:</span>
+                            <span class="value" id="summary-profit">₹0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Avg Profit/KM:</span>
+                            <span class="value" id="summary-avg-profit">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trucks Table -->
+                <div class="table-container">
+                    <div id="no-data" class="no-data">
+                        <p>No truck data found. Add some truck trips to get started!</p>
+                    </div>
+
+                    <table id="trucks-table" class="trucks-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Truck #</th>
+                                <th>Driver</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>KM</th>
+                                <th>Fuel Cost</th>
+                                <th>Driver Salary</th>
+                                <th>Maintenance</th>
+                                <th>Other Expenses</th>
+                                <th>Total Cost</th>
+                                <th>Revenue</th>
+                                <th>Profit/Loss</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trucks-tbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Overall Statistics -->
+                <div id="overall-stats" class="overall-stats" style="display: none;">
+                    <h3>Overall Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Records:</span>
+                            <span class="stat-value" id="total-records">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total KM:</span>
+                            <span class="stat-value" id="total-km-view">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Revenue:</span>
+                            <span class="stat-value revenue" id="total-revenue-view">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Cost:</span>
+                            <span class="stat-value cost" id="total-cost-view">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Profit:</span>
+                            <span class="stat-value" id="total-profit-view">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2024 Truck Management System. All data is stored locally in your browser.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Global variables
+        let trucks = JSON.parse(localStorage.getItem('truck-management-data') || '[]');
+        let monthlyExpenses = JSON.parse(localStorage.getItem('truck-monthly-expenses') || '[]');
+        let filteredTrucks = [...trucks];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            
+            // Set current month and year as default for monthly expenses
+            const now = new Date();
+            document.getElementById('month').value = now.getMonth() + 1;
+            document.getElementById('year').value = now.getFullYear();
+            
+            // Add event listeners for real-time calculations
+            const inputs = ['fuelCost', 'driverSalary', 'maintenanceCost', 'otherExpenses', 'totalRevenue'];
+            inputs.forEach(inputId => {
+                document.getElementById(inputId).addEventListener('input', updateCalculations);
+            });
+            
+            // Add event listeners for monthly expense calculations
+            const monthlyInputs = ['monthlyDriverSalary', 'monthlyMaintenanceCost', 'otherMonthlyExpenses'];
+            monthlyInputs.forEach(inputId => {
+                document.getElementById(inputId).addEventListener('input', updateMonthlyCalculations);
+            });
+            
+            // Load truck numbers for dropdowns
+            loadTruckNumbers();
+            
+            // Display data
+            displayTrucks();
+            displayMonthlyExpenses();
+            updateDashboard();
+        });
+
+        // Tab switching
+        function showTab(tab) {
+            // Hide all tabs
+            document.getElementById('dashboard-tab').style.display = 'none';
+            document.getElementById('add-tab').style.display = 'none';
+            document.getElementById('monthly-tab').style.display = 'none';
+            document.getElementById('view-tab').style.display = 'none';
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            if (tab === 'dashboard') {
+                document.getElementById('dashboard-tab').style.display = 'block';
+                document.querySelector('.tab-btn').classList.add('active');
+                updateDashboard();
+            } else if (tab === 'add') {
+                document.getElementById('add-tab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            } else if (tab === 'monthly') {
+                document.getElementById('monthly-tab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                displayMonthlyExpenses();
+            } else {
+                document.getElementById('view-tab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[3].classList.add('active');
+                displayTrucks();
+            }
+        }
+
+        // Update calculations in real-time
+        function updateCalculations() {
+            const fuelCost = parseFloat(document.getElementById('fuelCost').value) || 0;
+            const driverSalary = parseFloat(document.getElementById('driverSalary').value) || 0;
+            const maintenanceCost = parseFloat(document.getElementById('maintenanceCost').value) || 0;
+            const otherExpenses = parseFloat(document.getElementById('otherExpenses').value) || 0;
+            const totalRevenue = parseFloat(document.getElementById('totalRevenue').value) || 0;
+            
+            const totalCost = fuelCost + driverSalary + maintenanceCost + otherExpenses;
+            const profit = totalRevenue - totalCost;
+            
+            document.getElementById('total-cost-calc').textContent = '₹' + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('total-revenue-display').textContent = '₹' + totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            const profitElement = document.getElementById('profit-loss');
+            profitElement.textContent = '₹' + profit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            profitElement.className = profit >= 0 ? 'profit' : 'loss';
+        }
+
+        // Update monthly expense calculations
+        function updateMonthlyCalculations() {
+            const driverSalary = parseFloat(document.getElementById('monthlyDriverSalary').value) || 0;
+            const maintenanceCost = parseFloat(document.getElementById('monthlyMaintenanceCost').value) || 0;
+            const otherExpenses = parseFloat(document.getElementById('otherMonthlyExpenses').value) || 0;
+            
+            const totalMonthlyExpense = driverSalary + maintenanceCost + otherExpenses;
+            document.getElementById('total-monthly-expense-calc').textContent = '₹' + totalMonthlyExpense.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Add truck data
+        function addTruckData(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const truckData = {
+                id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                truckNumber: formData.get('truckNumber').trim(),
+                driverName: formData.get('driverName').trim(),
+                date: formData.get('date'),
+                location: formData.get('location').trim(),
+                kilometers: parseFloat(formData.get('kilometers')),
+                fuelCost: parseFloat(formData.get('fuelCost')),
+                driverSalary: parseFloat(formData.get('driverSalary')),
+                maintenanceCost: parseFloat(formData.get('maintenanceCost')),
+                otherExpenses: parseFloat(formData.get('otherExpenses')),
+                totalRevenue: parseFloat(formData.get('totalRevenue'))
+            };
+            
+            // Calculate totals
+            truckData.totalCost = truckData.fuelCost + truckData.driverSalary + truckData.maintenanceCost + truckData.otherExpenses;
+            truckData.profit = truckData.totalRevenue - truckData.totalCost;
+            
+            // Add to trucks array
+            trucks.push(truckData);
+            
+            // Save to localStorage
+            localStorage.setItem('truck-management-data', JSON.stringify(trucks));
+            
+            // Show success message
+            const successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+            
+            // Reset form
+            event.target.reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            updateCalculations();
+            
+            // Update truck numbers dropdown
+            loadTruckNumbers();
+        }
+
+        // Add monthly expense
+        function addMonthlyExpense(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const monthlyExpenseData = {
+                id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                truckNumber: formData.get('monthlyTruckNumber'),
+                month: formData.get('month'),
+                year: parseInt(formData.get('year')),
+                driverSalary: parseFloat(formData.get('monthlyDriverSalary')),
+                maintenanceCost: parseFloat(formData.get('monthlyMaintenanceCost')),
+                otherMonthlyExpenses: parseFloat(formData.get('otherMonthlyExpenses'))
+            };
+            
+            // Calculate total
+            monthlyExpenseData.totalMonthlyExpense = monthlyExpenseData.driverSalary + monthlyExpenseData.maintenanceCost + monthlyExpenseData.otherMonthlyExpenses;
+            
+            // Add to monthly expenses array
+            monthlyExpenses.push(monthlyExpenseData);
+            
+            // Save to localStorage
+            localStorage.setItem('truck-monthly-expenses', JSON.stringify(monthlyExpenses));
+            
+            // Show success message
+            const successMessage = document.getElementById('monthly-success-message');
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+            
+            // Reset form
+            event.target.reset();
+            const now = new Date();
+            document.getElementById('month').value = now.getMonth() + 1;
+            document.getElementById('year').value = now.getFullYear();
+            updateMonthlyCalculations();
+            
+            // Update displays
+            displayMonthlyExpenses();
+            loadTruckNumbers();
+        }
+
+        // Load truck numbers for dropdown
+        function loadTruckNumbers() {
+            const truckNumbers = [...new Set(trucks.map(truck => truck.truckNumber))].sort();
+            const select = document.getElementById('truckSelect');
+            const monthlySelect = document.getElementById('monthlyTruckNumber');
+            
+            select.innerHTML = '<option value="">All Trucks</option>';
+            monthlySelect.innerHTML = '<option value="">Select Truck</option>';
+            
+            truckNumbers.forEach(number => {
+                const option = document.createElement('option');
+                option.value = number;
+                option.textContent = number;
+                select.appendChild(option);
+                
+                const monthlyOption = document.createElement('option');
+                monthlyOption.value = number;
+                monthlyOption.textContent = number;
+                monthlySelect.appendChild(monthlyOption);
+            });
+        }
+
+        // Display trucks
+        function displayTrucks() {
+            const tbody = document.getElementById('trucks-tbody');
+            const noData = document.getElementById('no-data');
+            const table = document.getElementById('trucks-table');
+            const overallStats = document.getElementById('overall-stats');
+            
+            if (filteredTrucks.length === 0) {
+                noData.style.display = 'block';
+                table.style.display = 'none';
+                overallStats.style.display = 'none';
+                return;
+            }
+            
+            noData.style.display = 'none';
+            table.style.display = 'table';
+            overallStats.style.display = 'block';
+            
+            tbody.innerHTML = '';
+            filteredTrucks.forEach(truck => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="truck-number">${truck.truckNumber}</td>
+                    <td>${truck.driverName}</td>
+                    <td>${new Date(truck.date).toLocaleDateString()}</td>
+                    <td>${truck.location}</td>
+                    <td>${truck.kilometers.toLocaleString()}</td>
+                    <td>₹${truck.fuelCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₹${truck.driverSalary.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₹${truck.maintenanceCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₹${truck.otherExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="cost">₹${truck.totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="revenue">₹${truck.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="${truck.profit >= 0 ? 'profit' : 'loss'}">₹${truck.profit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>
+                        <button onclick="deleteTruck('${truck.id}')" class="delete-btn" title="Delete this record">
+                            🗑️
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update overall statistics
+            updateOverallStats();
+        }
+
+        // Display monthly expenses
+        function displayMonthlyExpenses() {
+            const tbody = document.getElementById('monthly-expenses-tbody');
+            const noData = document.getElementById('no-monthly-data');
+            const expensesList = document.getElementById('expenses-list');
+            
+            if (monthlyExpenses.length === 0) {
+                noData.style.display = 'block';
+                expensesList.style.display = 'none';
+                return;
+            }
+            
+            noData.style.display = 'none';
+            expensesList.style.display = 'block';
+            
+            tbody.innerHTML = '';
+            monthlyExpenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="truck-number">${expense.truckNumber}</td>
+                    <td>${getMonthName(expense.month)} ${expense.year}</td>
+                    <td>₹${expense.driverSalary.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₹${expense.maintenanceCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₹${expense.otherMonthlyExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="cost">₹${expense.totalMonthlyExpense.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>
+                        <button onclick="deleteMonthlyExpense('${expense.id}')" class="delete-btn" title="Delete this expense">
+                            🗑️
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const truckNumbers = [...new Set(trucks.map(truck => truck.truckNumber))];
+            const totalTrips = trucks.length;
+            const totalKilometers = trucks.reduce((sum, truck) => sum + truck.kilometers, 0);
+            const totalRevenue = trucks.reduce((sum, truck) => sum + truck.totalRevenue, 0);
+            const totalCost = trucks.reduce((sum, truck) => sum + truck.totalCost, 0);
+            const totalProfit = trucks.reduce((sum, truck) => sum + truck.profit, 0);
+            const totalMonthlyExpenses = monthlyExpenses.reduce((sum, expense) => sum + expense.totalMonthlyExpense, 0);
+            const netProfit = totalProfit - totalMonthlyExpenses;
+            
+            // Update overall stats
+            document.getElementById('total-trucks').textContent = truckNumbers.length;
+            document.getElementById('total-trips').textContent = totalTrips;
+            document.getElementById('total-km').textContent = totalKilometers.toLocaleString();
+            document.getElementById('total-revenue').textContent = '₹' + totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('total-cost').textContent = '₹' + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('total-monthly-expenses').textContent = '₹' + totalMonthlyExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            const netProfitElement = document.getElementById('net-profit');
+            netProfitElement.textContent = '₹' + netProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            netProfitElement.className = 'stat-value ' + (netProfit >= 0 ? 'profit' : 'loss');
+            
+            // Show/hide sections based on data
+            if (trucks.length === 0) {
+                document.getElementById('no-data-dashboard').style.display = 'block';
+                document.getElementById('truck-performance').style.display = 'none';
+                document.getElementById('recent-trips').style.display = 'none';
+            } else {
+                document.getElementById('no-data-dashboard').style.display = 'none';
+                document.getElementById('truck-performance').style.display = 'block';
+                document.getElementById('recent-trips').style.display = 'block';
+                
+                // Update truck performance cards
+                updateTruckPerformanceCards();
+                
+                // Update recent trips
+                updateRecentTrips();
+            }
+        }
+
+        // Update truck performance cards
+        function updateTruckPerformanceCards() {
+            const trucksGrid = document.getElementById('trucks-grid');
+            const truckNumbers = [...new Set(trucks.map(truck => truck.truckNumber))];
+            
+            trucksGrid.innerHTML = '';
+            truckNumbers.forEach(truckNumber => {
+                const truckData = trucks.filter(truck => truck.truckNumber === truckNumber);
+                const totalTrips = truckData.length;
+                const totalKilometers = truckData.reduce((sum, truck) => sum + truck.kilometers, 0);
+                const totalRevenue = truckData.reduce((sum, truck) => sum + truck.totalRevenue, 0);
+                const totalCost = truckData.reduce((sum, truck) => sum + truck.totalCost, 0);
+                const totalProfit = truckData.reduce((sum, truck) => sum + truck.profit, 0);
+                const averageProfitPerKm = totalKilometers > 0 ? totalProfit / totalKilometers : 0;
+                const monthlyExpensesForTruck = monthlyExpenses.filter(expense => expense.truckNumber === truckNumber);
+                const totalMonthlyExpenses = monthlyExpensesForTruck.reduce((sum, expense) => sum + expense.totalMonthlyExpense, 0);
+                const netProfit = totalProfit - totalMonthlyExpenses;
+                
+                const card = document.createElement('div');
+                card.className = 'truck-card';
+                card.innerHTML = `
+                    <div class="truck-header">
+                        <h4>${truckNumber}</h4>
+                        <div class="truck-status ${netProfit >= 0 ? 'profitable' : 'loss'}">
+                            ${netProfit >= 0 ? 'Profitable' : 'Loss'}
+                        </div>
+                    </div>
+                    <div class="truck-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Trips:</span>
+                            <span class="metric-value">${totalTrips}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">KM:</span>
+                            <span class="metric-value">${totalKilometers.toLocaleString()}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Revenue:</span>
+                            <span class="metric-value revenue">₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Trip Costs:</span>
+                            <span class="metric-value cost">₹${totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Monthly Expenses:</span>
+                            <span class="metric-value cost">₹${totalMonthlyExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Trip Profit:</span>
+                            <span class="metric-value ${totalProfit >= 0 ? 'profit' : 'loss'}">₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg Profit/KM:</span>
+                            <span class="metric-value ${averageProfitPerKm >= 0 ? 'profit' : 'loss'}">₹${averageProfitPerKm.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="metric net-profit">
+                            <span class="metric-label">Net Profit:</span>
+                            <span class="metric-value ${netProfit >= 0 ? 'profit' : 'loss'}">₹${netProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                    </div>
+                `;
+                trucksGrid.appendChild(card);
+            });
+        }
+
+        // Update recent trips
+        function updateRecentTrips() {
+            const tbody = document.getElementById('recent-trips-tbody');
+            const recentTrips = trucks.slice(-10).reverse();
+            
+            tbody.innerHTML = '';
+            recentTrips.forEach(truck => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="truck-number">${truck.truckNumber}</td>
+                    <td>${truck.driverName}</td>
+                    <td>${new Date(truck.date).toLocaleDateString()}</td>
+                    <td>${truck.location}</td>
+                    <td>${truck.kilometers.toLocaleString()}</td>
+                    <td class="revenue">₹${truck.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="cost">₹${truck.totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="${truck.profit >= 0 ? 'profit' : 'loss'}">₹${truck.profit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update overall statistics
+        function updateOverallStats() {
+            const totalRecords = filteredTrucks.length;
+            const totalKm = filteredTrucks.reduce((sum, truck) => sum + truck.kilometers, 0);
+            const totalRevenue = filteredTrucks.reduce((sum, truck) => sum + truck.totalRevenue, 0);
+            const totalCost = filteredTrucks.reduce((sum, truck) => sum + truck.totalCost, 0);
+            const totalProfit = filteredTrucks.reduce((sum, truck) => sum + truck.profit, 0);
+            
+            document.getElementById('total-records').textContent = totalRecords;
+            document.getElementById('total-km-view').textContent = totalKm.toLocaleString();
+            document.getElementById('total-revenue-view').textContent = '₹' + totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('total-cost-view').textContent = '₹' + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            const profitElement = document.getElementById('total-profit-view');
+            profitElement.textContent = '₹' + totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            profitElement.className = 'stat-value ' + (totalProfit >= 0 ? 'profit' : 'loss');
+        }
+
+        // Filter by truck
+        function filterByTruck() {
+            const selectedTruck = document.getElementById('truckSelect').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredTrucks = trucks.filter(truck => {
+                const matchesTruck = !selectedTruck || truck.truckNumber === selectedTruck;
+                const matchesSearch = !searchTerm || 
+                    truck.truckNumber.toLowerCase().includes(searchTerm) ||
+                    truck.driverName.toLowerCase().includes(searchTerm) ||
+                    truck.location.toLowerCase().includes(searchTerm) ||
+                    truck.date.includes(searchTerm);
+                return matchesTruck && matchesSearch;
+            });
+            
+            displayTrucks();
+            updateTruckSummary(selectedTruck);
+        }
+
+        // Search trucks
+        function searchTrucks() {
+            filterByTruck();
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('truckSelect').value = '';
+            document.getElementById('searchInput').value = '';
+            filteredTrucks = [...trucks];
+            displayTrucks();
+            document.getElementById('summary-card').style.display = 'none';
+        }
+
+        // Update truck summary
+        function updateTruckSummary(truckNumber) {
+            if (!truckNumber) {
+                document.getElementById('summary-card').style.display = 'none';
+                return;
+            }
+            
+            const truckData = trucks.filter(truck => truck.truckNumber === truckNumber);
+            if (truckData.length === 0) {
+                document.getElementById('summary-card').style.display = 'none';
+                return;
+            }
+            
+            const totalTrips = truckData.length;
+            const totalKm = truckData.reduce((sum, truck) => sum + truck.kilometers, 0);
+            const totalRevenue = truckData.reduce((sum, truck) => sum + truck.totalRevenue, 0);
+            const totalCost = truckData.reduce((sum, truck) => sum + truck.totalCost, 0);
+            const totalProfit = truckData.reduce((sum, truck) => sum + truck.profit, 0);
+            const avgProfitPerKm = totalKm > 0 ? totalProfit / totalKm : 0;
+            
+            document.getElementById('summary-title').textContent = `Truck Summary: ${truckNumber}`;
+            document.getElementById('summary-trips').textContent = totalTrips;
+            document.getElementById('summary-km').textContent = totalKm.toLocaleString();
+            document.getElementById('summary-revenue').textContent = '₹' + totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('summary-cost').textContent = '₹' + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            const profitElement = document.getElementById('summary-profit');
+            profitElement.textContent = '₹' + totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            profitElement.className = 'value ' + (totalProfit >= 0 ? 'profit' : 'loss');
+            
+            const avgProfitElement = document.getElementById('summary-avg-profit');
+            avgProfitElement.textContent = '₹' + avgProfitPerKm.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            avgProfitElement.className = 'value ' + (avgProfitPerKm >= 0 ? 'profit' : 'loss');
+            
+            document.getElementById('summary-card').style.display = 'block';
+        }
+
+        // Delete truck
+        function deleteTruck(id) {
+            if (confirm('Are you sure you want to delete this truck data?')) {
+                trucks = trucks.filter(truck => truck.id !== id);
+                localStorage.setItem('truck-management-data', JSON.stringify(trucks));
+                loadTruckNumbers();
+                filterByTruck();
+                updateDashboard();
+            }
+        }
+
+        // Delete monthly expense
+        function deleteMonthlyExpense(id) {
+            if (confirm('Are you sure you want to delete this monthly expense?')) {
+                monthlyExpenses = monthlyExpenses.filter(expense => expense.id !== id);
+                localStorage.setItem('truck-monthly-expenses', JSON.stringify(monthlyExpenses));
+                displayMonthlyExpenses();
+                loadTruckNumbers();
+                updateDashboard();
+            }
+        }
+
+        // Get month name
+        function getMonthName(month) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            return months[parseInt(month) - 1] || month;
+        }
+    </script>
+</body>
+</html>

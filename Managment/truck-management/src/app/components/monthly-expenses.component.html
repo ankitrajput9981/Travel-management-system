@@ -1,0 +1,183 @@
+<div class="monthly-expenses-container">
+  <h2>Monthly Expenses Management</h2>
+  
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+
+  <form [formGroup]="monthlyExpenseForm" (ngSubmit)="onSubmit()" class="monthly-expense-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="truckNumber">Truck Number *</label>
+        <select 
+          id="truckNumber" 
+          formControlName="truckNumber"
+          [class.error]="isSubmitted && f.truckNumber.invalid"
+        >
+          <option value="">Select Truck</option>
+          <option *ngFor="let truckNumber of truckNumbers" [value]="truckNumber">
+            {{ truckNumber }}
+          </option>
+        </select>
+        <div *ngIf="isSubmitted && f.truckNumber.invalid" class="error-message">
+          <div *ngIf="f.truckNumber.errors?.['required']">Truck number is required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="month">Month *</label>
+        <select 
+          id="month" 
+          formControlName="month"
+          [class.error]="isSubmitted && f.month.invalid"
+        >
+          <option value="">Select Month</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+        <div *ngIf="isSubmitted && f.month.invalid" class="error-message">
+          <div *ngIf="f.month.errors?.['required']">Month is required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="year">Year *</label>
+        <input 
+          type="number" 
+          id="year" 
+          formControlName="year"
+          placeholder="2024"
+          min="2020"
+          max="2030"
+          [class.error]="isSubmitted && f.year.invalid"
+        >
+        <div *ngIf="isSubmitted && f.year.invalid" class="error-message">
+          <div *ngIf="f.year.errors?.['required']">Year is required</div>
+          <div *ngIf="f.year.errors?.['min'] || f.year.errors?.['max']">Year must be between 2020 and 2030</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expenses-section">
+      <h3>Monthly Expenses</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="driverSalary">Driver Salary (₹) *</label>
+          <input 
+            type="number" 
+            id="driverSalary" 
+            formControlName="driverSalary"
+            placeholder="0"
+            min="0"
+            step="0.01"
+            [class.error]="isSubmitted && f.driverSalary.invalid"
+          >
+          <div *ngIf="isSubmitted && f.driverSalary.invalid" class="error-message">
+            <div *ngIf="f.driverSalary.errors?.['required']">Driver salary is required</div>
+            <div *ngIf="f.driverSalary.errors?.['min']">Driver salary cannot be negative</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="maintenanceCost">Maintenance Cost (₹) *</label>
+          <input 
+            type="number" 
+            id="maintenanceCost" 
+            formControlName="maintenanceCost"
+            placeholder="0"
+            min="0"
+            step="0.01"
+            [class.error]="isSubmitted && f.maintenanceCost.invalid"
+          >
+          <div *ngIf="isSubmitted && f.maintenanceCost.invalid" class="error-message">
+            <div *ngIf="f.maintenanceCost.errors?.['required']">Maintenance cost is required</div>
+            <div *ngIf="f.maintenanceCost.errors?.['min']">Maintenance cost cannot be negative</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="otherMonthlyExpenses">Other Monthly Expenses (₹) *</label>
+          <input 
+            type="number" 
+            id="otherMonthlyExpenses" 
+            formControlName="otherMonthlyExpenses"
+            placeholder="0"
+            min="0"
+            step="0.01"
+            [class.error]="isSubmitted && f.otherMonthlyExpenses.invalid"
+          >
+          <div *ngIf="isSubmitted && f.otherMonthlyExpenses.invalid" class="error-message">
+            <div *ngIf="f.otherMonthlyExpenses.errors?.['required']">Other monthly expenses is required</div>
+            <div *ngIf="f.otherMonthlyExpenses.errors?.['min']">Other monthly expenses cannot be negative</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Total Monthly Expense</label>
+          <div class="total-display">
+            {{ formatCurrency(calculateTotalMonthlyExpense()) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="monthlyExpenseForm.invalid">
+      Add Monthly Expense
+    </button>
+  </form>
+
+  <!-- Monthly Expenses List -->
+  <div class="expenses-list" *ngIf="monthlyExpenses.length > 0">
+    <h3>Monthly Expenses History</h3>
+    <div class="table-container">
+      <table class="expenses-table">
+        <thead>
+          <tr>
+            <th>Truck #</th>
+            <th>Month/Year</th>
+            <th>Driver Salary</th>
+            <th>Maintenance</th>
+            <th>Other Expenses</th>
+            <th>Total Expense</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let expense of monthlyExpenses">
+            <td class="truck-number">{{ expense.truckNumber }}</td>
+            <td>{{ getMonthName(expense.month) }} {{ expense.year }}</td>
+            <td>{{ formatCurrency(expense.driverSalary) }}</td>
+            <td>{{ formatCurrency(expense.maintenanceCost) }}</td>
+            <td>{{ formatCurrency(expense.otherMonthlyExpenses) }}</td>
+            <td class="cost">{{ formatCurrency(expense.totalMonthlyExpense) }}</td>
+            <td>
+              <button 
+                (click)="deleteMonthlyExpense(expense.id)" 
+                class="delete-btn"
+                title="Delete this expense"
+              >
+                🗑️
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="monthlyExpenses.length === 0" class="no-data">
+    <p>No monthly expenses recorded yet. Add some monthly expenses to get started!</p>
+  </div>
+</div>
